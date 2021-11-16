@@ -3,8 +3,8 @@ class Account {
 
   constructor(username) {
     this.username = username;
-    this.transactions = [];
     this.balance = 0;
+    this.transactions = [];
   }
 
   // get balance() {
@@ -27,16 +27,22 @@ class Transaction {
   }
 
   commit() {
-    // Keep track of the time of the transaction
+
+    if (!this.isAllowed()) {
+      return;
+    }
     this.time = new Date();
     this.account.balance += this.value;
-    // Add the transaction to the account
     this.account.transactions.push(this);
     // this.account.addTransaction(this);
   }
 }
 
 class Deposit extends Transaction {
+
+  isAllowed() {
+    return true;
+  }
 
   get value() {
     return this.amount;
@@ -45,6 +51,10 @@ class Deposit extends Transaction {
 }
 
 class Withdrawal extends Transaction {
+
+  isAllowed() {
+    return (this.account.balance - this.amount >= 0);
+  }
 
   get value() {
     return -this.amount;
@@ -65,7 +75,8 @@ console.log('Starting Balance:', myAccount.balance);
 const t1 = new Deposit(120.00, myAccount);
 t1.commit();
 
-const t2 = new Withdrawal(50.00, myAccount);
+const t2 = new Withdrawal(500.00, myAccount);
 t2.commit();
 
 console.log('Ending Balance:', myAccount.balance);
+console.log(myAccount);
